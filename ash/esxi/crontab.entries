@@ -1,0 +1,16 @@
+1) Edit /var/spool/cron/crontabs/root
+2) Edit /etc/rc.local to add the crontab entries to the root crontab (/var/spool/cron/crontabs/root) when the system is rebooted.
+3) Run /sbin/auto-backup.sh to archive the new rc.local for the next reboot
+
+ESXi uses UTC only (add 6 hours to time for CST)
+
+Crontab:
+0 9 * * * /vmfs/volumes/vmhost-tc-local/scripts/daily_backup.sh > /vmfs/volumes/vmhost-tc-local/scripts/logs/backup-$(date +%a).log 2>&1
+0 10 * * 0 /vmfs/volumes/vmhost-tc-local/scripts/revert_snapshot.sh
+
+rc.local:
+/bin/kill $(cat /var/run/crond.pid)
+/bin/echo '0 9 * * * /vmfs/volumes/vmhost-tc-local/scripts/daily_backup.sh > /vmfs/volumes/vmhost-tc-local/scripts/logs/backup-$(date +%a).log 2>&1' >> /var/spool/cron/crontabs/root
+/bin/echo '0 10 * * 0 /vmfs/volumes/vmhost-tc-local/scripts/revert_snapshot.sh' >> /var/spool/cron/crontabs/root
+/bin/busybox crond
+

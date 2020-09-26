@@ -1,0 +1,30 @@
+# ./esxi_vaai_unmap.sh compellent-vmdisk-test
+
+=====================================================================
+
+Fri Jun  7 03:54:01 UTC 2013
+
+/vmfs/volumes/compellent-vmdisk-test
+naa.6000d310004b09000000000000000021
+   Thin Provisioning Status: yes
+   VAAI Status: supported
+   Delete Status: supported
+Volume is ready to run VAAI UNMAP command...
+
+Filesystem   Size   Used Available Use% Mounted on
+VMFS-5       2.0T 438.8G      1.6T  21% /vmfs/volumes/compellent-vmdisk-test
+
+Attempting to reclaim 90% of free capacity 1.6 TB (1.4 TB) on VMFS-5 file system 'compellent-vmdisk-test' with max file size 64 TB.
+Creating file .vmfsBalloonhmT63w of size 1.4 TB to reclaim free blocks.
+Could not truncate file .vmfsBalloonhmT63w to 517.9 GB (No such device or address).
+Could not truncate file .vmfsBalloonhmT63w to 400.7 GB (No such device or address).
+Done.
+real    40m 27.21s
+user    0m 4.50s
+sys     0m 0.00s
+
+VAAI UNMAP operation complete!
+
+=====================================================================
+
+
