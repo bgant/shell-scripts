@@ -1,0 +1,28 @@
+# PAM configuration file for 2-Factor authentication
+#
+# Brandon Gant
+# Updated: 2016-12-16
+#
+
+auth [success=2 default=ignore] pam_succeed_if.so quiet user notingroup duo
+auth required                   pam_duo.so
+auth [success=2 default=ignore] pam_succeed_if.so quiet user notingroup yubikey
+auth required                   pam_yubico.so     id=<Your_Own_ID>  authfile=/etc/yubikeys  url=https://api.yubico.com/wsapi/2.0/verify?id=%d&otp=%s
+auth [success=done default=die] pam_unix.so       use_first_pass
+
+#
+# How it all works:
+#   /etc/pam.d/sshd - User logs in normally with username and password
+#   /etc/pam.d/sshd - If "@include two-factor-auth" line is included, jump to /etc/pam.d/two-factor-auth 
+#   /etc/pam.d/two-factor-auth "auth" #1 - if user IS NOT in /etc/group "duo", jump to auth line #3 (success=2), else goto auth line #2
+#   /etc/pam.d/two-factor-auth "auth" #2 - pam_duo.so Sends Duo authentication to user's phone using /etc/security/pam_duo.conf settings
+#   /etc/pam.d/two-factor-auth "auth" #3 - if user IS NOT in /etc/group "yubikey", jump to auth line #5 (success=2), else goto auth line #4
+#   /etc/pam.d/two-factor-auth "auth" #4 - pam_yubikey.so checks username in /etc/yubikeys and validates user's Yubikey input string
+#   /etc/pam.d/two-factor-auth "auth" #5 - Logs the user into the service
+#
+# How "auth" options work:
+#   required   ==  [success=ok new_authtok_reqd=ok ignore=ignore default=bad]  <-- Hackers can't tell which part failed
+#   requisite  ==  [success=ok new_authtok_reqd=ok ignore=ignore default=die]  <-- Fails immediately
+#   sufficient ==  [success=done new_authtok_reqd=done default=ignore]         <-- Ignores failure
+#   optional   ==  [success=ok new_authtok_reqd=ok default=ignore]             <-- Ignores failure
+#

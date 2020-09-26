@@ -1,0 +1,50 @@
+#   * * * * * command to be executed
+#   | | | | |
+#   | | | | +----- day of week (0 - 6) (Sunday=0)
+#   | | | +------- month (1 - 12)
+#   | | +--------- day of month (1 - 31)
+#   | +----------- hour (0 - 23)
+#   +------------- min (0 - 59)
+#
+
+#------ Output ps data to files every minute and keep for 36 hours
+*/1 * * * * /home/root/scripts/ps-output.sh > /dev/null 2>&1
+
+#------ Update RRD files with ps output
+*/5 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_update.sh > /dev/null 2>&1
+
+#-------- CPU Response Time 
+*/5 * * * *  /opt/rrdtool/scripts/rrdtool_mprime.sh > /dev/null 2>&1
+*/5 * * * *  /bin/nice /opt/rrdtool/scripts/rrdtool_mprime_graph.sh hour > /dev/null 2>&1
+*/5 * * * *  /bin/nice /opt/rrdtool/scripts/rrdtool_mprime_graph.sh day > /dev/null 2>&1
+*/15 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_mprime_graph.sh week > /dev/null 2>&1
+*/30 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_mprime_graph.sh month > /dev/null 2>&1
+00 * * * *   /bin/nice /opt/rrdtool/scripts/rrdtool_mprime_graph.sh year > /dev/null 2>&1
+
+#-------- JVM Memory Usage Graph (requires root)
+*/5 * * * * root /bin/nice /opt/rrdtool/scripts/rrdtool_update.sh jvm_heap_used_vxws.rrd "/opt/rrdtool/scripts/rrdtool_jvm_memory.sh jvm_heap_used vxws" > /dev/null 2>&1
+*/5 * * * * root /bin/nice /opt/rrdtool/scripts/rrdtool_update.sh jvm_heap_max_vxws.rrd "/opt/rrdtool/scripts/rrdtool_jvm_memory.sh jvm_heap_max vxws" > /dev/null 2>&1
+*/5 * * * * root /bin/nice /opt/rrdtool/scripts/rrdtool_update.sh jvm_gc_vxws.rrd "/opt/rrdtool/scripts/rrdtool_jvm_memory.sh jvm_gc vxws" > /dev/null 2>&1
+
+#------ JVM Memory Usage Graph
+*/5 * * * *  /bin/nice /opt/rrdtool/scripts/rrdtool_update.sh server_ram_total.rrd "/opt/rrdtool/scripts/rrdtool_jvm_memory.sh server_ram_total" > /dev/null 2>&1
+*/5 * * * *  /bin/nice /opt/rrdtool/scripts/rrdtool_update.sh server_ram_used.rrd "/opt/rrdtool/scripts/rrdtool_jvm_memory.sh server_ram_used" > /dev/null 2>&1
+*/5 * * * *  /bin/nice /opt/rrdtool/scripts/rrdtool_jvm_memory_graph.sh hour vxws > /dev/null 2>&1
+*/5 * * * *  /bin/nice /opt/rrdtool/scripts/rrdtool_jvm_memory_graph.sh day vxws > /dev/null 2>&1
+*/15 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_jvm_memory_graph.sh week vxws > /dev/null 2>&1
+*/30 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_jvm_memory_graph.sh month vxws > /dev/null 2>&1
+00 * * * *   /bin/nice /opt/rrdtool/scripts/rrdtool_jvm_memory_graph.sh year vxws > /dev/null 2>&1
+
+#------ Create ALL opacsvr Graphs
+3,8,13,18,23,28,33,38,43,48,53,58 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=hour --process=opacsvr > /dev/null 2>&1
+3,8,13,18,23,28,33,38,43,48,53,58 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=day --process=opacsvr > /dev/null 2>&1
+0,15,30,45 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=week --process=opacsvr > /dev/null 2>&1
+15,45 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=month --process=opacsvr > /dev/null 2>&1
+15 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=year --process=opacsvr > /dev/null 2>&1
+
+#------ Create ALL keysvr Graphs
+3,8,13,18,23,28,33,38,43,48,53,58 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=hour --process=keysvr > /dev/null 2>&1
+3,8,13,18,23,28,33,38,43,48,53,58 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=day --process=keysvr > /dev/null 2>&1
+0,15,30,45 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=week --process=keysvr > /dev/null 2>&1
+15,45 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=month --process=keysvr > /dev/null 2>&1
+15 * * * * /bin/nice /opt/rrdtool/scripts/rrdtool_ps_graph.sh --timespan=year --process=keysvr > /dev/null 2>&1

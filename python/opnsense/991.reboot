@@ -1,0 +1,3 @@
+#!/bin/sh
+# cp /root/991.reboot /etc/periodic/daily/
+/sbin/reboot

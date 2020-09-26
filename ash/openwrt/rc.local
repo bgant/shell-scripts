@@ -1,0 +1,19 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+
+# Keep rc.local in /root with other custom files
+# rm /etc/rc.local
+# ln -s /root/rc.local /etc/rc.local
+
+# Check if sysupgrade has been performed
+opkg list-installed | grep luci-ssl-openssl > /dev/null
+if [ $? != 0 ]
+then
+  echo "Installing missing packages..."
+  opkg -V0 update
+  opkg -V0 install luci-ssl-openssl ca-bundle ca-certificates
+  opkg -V0 list-upgradable | cut -f 1 -d ' ' | xargs opkg upgrade
+  reboot
+fi
+
+exit 0

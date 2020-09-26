@@ -1,0 +1,5 @@
+#!/bin/sh
+# cp /root/990.restart-openvpn /etc/periodic/daily/
+ps -x -o pid -o command | grep -v grep | grep openvpn-mqtt.py | awk -F' ' '{print $1}' | xargs -I {} kill {}
+/usr/local/sbin/configctl openvpn restart
+nice /usr/local/bin/python3 /root/openvpn-mqtt.py 2>& /dev/null &

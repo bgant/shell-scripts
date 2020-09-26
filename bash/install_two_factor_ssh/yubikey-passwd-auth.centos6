@@ -1,0 +1,23 @@
+# Add to Top of /etc/pam.d/sshd after #%PAM-1.0 line (bottom of file does not work)
+
+# Ask for password first
+auth required     pam_unix.so      no_warn try_first_pass
+
+# If user is not in the yubikey group, skip the next auth line (success=1)
+auth [success=1 default=ignore] pam_succeed_if.so quiet user notingroup yubikey
+
+# If user is in the yubikey group, ask for yubikey token
+auth required     pam_yubico.so    id=<Your_Own_ID> authfile=/etc/yubikeys url=https://api.yubico.com/wsapi/2.0/verify?id=%d&otp=%s
+
+#   required   ==  [success=ok new_authtok_reqd=ok ignore=ignore default=bad]  <-- Hackers can't tell which part failed
+#   requisite  ==  [success=ok new_authtok_reqd=ok ignore=ignore default=die]  <-- Fails immediately
+#   sufficient ==  [success=done new_authtok_reqd=done default=ignore]         <-- Ignores failure
+#   optional   ==  [success=ok new_authtok_reqd=ok default=ignore]             <-- Ignores failure
+#
+#   Example:
+#   auth [success=done new_authtok_reqd=ok auth_err=die default=ignore] pam_<module>.so
+#
+#   This will stop execution of the auth stack with failure when the password is wrong, 
+#   stop execution with success when the module passes, 
+#   and move along the auth stack in any other scenario.
+

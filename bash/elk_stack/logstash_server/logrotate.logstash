@@ -1,0 +1,16 @@
+# filename: /etc/logrotate.d/logstash
+# Invoke Manually: /usr/sbin/logrotate --force /etc/logrotate.conf
+/var/log/logstash/*.log {
+    rotate 2
+    size=50G
+    missingok
+    notifempty
+    prerotate
+        /etc/init.d/logstash stop
+        sleep 10
+    endscript
+
+    postrotate
+        /etc/init.d/logstash start
+    endscript
+}

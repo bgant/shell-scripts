@@ -1,0 +1,16 @@
+# * * * * * command to execute
+# - - - - -
+# | | | | |
+# | | | | ----- Day of week (0 - 6) (Sunday =0)
+# | | | ------- Month (1 - 12)
+# | | --------- Day (1 - 31)
+# | ----------- Hour (0 - 23)
+# ------------- Minute (0 - 59)
+
+# Keep crontab in /root with other custom files
+# cp crontab /etc/crontabs/root
+# crontab -l
+# crontab -e  # Overwrites /etc/crontabs/root even if no changes made (so no symlink)
+
+15 02 * * * /root/upgrade-firmware.sh
+15 03 * * * /root/upgrade-packages.sh

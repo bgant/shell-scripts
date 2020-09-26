@@ -1,0 +1,3 @@
+#!/bin/sh
+# /usr/local/etc/rc.syshook.d/start/93-openvpn-mqtt
+nice /usr/local/bin/python3 /root/openvpn-mqtt.py 2>&1 > /dev/null &
